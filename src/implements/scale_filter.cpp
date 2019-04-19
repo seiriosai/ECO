@@ -3,7 +3,7 @@
 #include "opencv2/imgproc.hpp"
 #include <Eigen/Dense>
 #include "fftw3.h"
-
+#include "fhog.h"
 #include "opencv2/highgui.hpp"
 #include "matlab_func.hpp"
 namespace Track
@@ -11,7 +11,6 @@ namespace Track
 
 ScaleFilter::ScaleFilter(Size2f init_sz):bFirstFrame(true)
 {
-    fhog = make_shared<fHog>(4,9);
     nScales = config::number_of_scales_filter;
     fScaleStep = config::scale_step;
     double scale_step = config::scale_step_filter;
@@ -322,7 +321,7 @@ MatrixXf ScaleFilter::Sample(Mat im, Point2f pos, Size2f target_sz, VectorXd& sc
         cout<<" target_sz "<<target_sz<<endl;
         cout<<" h "<<h<<" w "<<w<<endl;
         shared_ptr<Feature::Feature> temp_hog;
-        temp_hog = fhog->extract(im_patch);
+		temp_hog = fhog(im_patch, 4, 9, 0.2f, false);
         if(i==0)
             scale_sample.resize(temp_hog->dim1*temp_hog->dim2*temp_hog->dim3,num_scales);
         int N = temp_hog->dim1*temp_hog->dim2*temp_hog->dim3;

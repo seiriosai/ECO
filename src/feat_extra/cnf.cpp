@@ -11,7 +11,7 @@ CNf::CNf(int _binSize)
     string line;
     float element;
     int index=0;
-    ifstream cin("./resource/CNnorm.txt");
+    ifstream cin("../resource/CNnorm.txt");
     assert(cin.is_open());
     while(getline(cin,line))
     {

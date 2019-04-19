@@ -4,7 +4,6 @@
 #include "Eigen/Core"
 #include "opencv2/opencv.hpp"
 #include "opencv2/core/eigen.hpp"
-#include "fhog.hpp"
 #include "cnf.hpp"
 #include "tracker.hpp"
 #include "sample_space.hpp"
@@ -14,7 +13,7 @@ using namespace std;
 int main()
 {
     // debug targetlocalized
-    config::ConfigParser("./resource/config.cfg");
+    config::ConfigParser("../resource/config.cfg");
     string folder = "/home/huajun/WorkSpace/file/OTB100/dataset/TB-100/"+ config::file_name;
     char img1[100];
     int start = 1;

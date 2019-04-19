@@ -169,7 +169,7 @@ public:
         {
             this->data = new T[_tem.size];
         }
-        else if(size < _tem.size);
+        else if(size < _tem.size)
         {
             delete[] this->data;
             this->data = new T[_tem.size];
@@ -196,7 +196,7 @@ public:
         {
             this->data = new T[_tem.size];
         }
-        else if(size != _tem.size);
+        else if(size != _tem.size)
         {
             delete[] this->data;
             this->data = new T[_tem.size];

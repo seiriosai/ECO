@@ -1,4 +1,6 @@
 #include "tracker.hpp"
+#include "fhog.h"
+#include<bits/stdc++.h>
 #include "matlab_func.hpp"
 #include "opencv2/imgproc.hpp"
 #include "opencv2/highgui.hpp"
@@ -6,11 +8,12 @@
 #include "fftw3.h"
 #include <ctime>
 #include <chrono>
+
 namespace Track
 {
 Tracker::Tracker(float tlx,float tly,float height,float width, Mat im)
 {
-    config::ConfigParser("./resource/config.cfg");
+    config::ConfigParser("../resource/config.cfg");
 
     m_im_height = im.rows;
     m_im_width = im.cols;
@@ -89,7 +92,6 @@ void Tracker::init()
     }
     // 初始化特征提取
     m_cn_extra = make_shared<CNf>(config::cn_cell_size);
-    m_hog_extra = make_shared<fHog>(config::hog_cell_size,config::hog_orient_num);
 
     // 真正的采样区域大小 
     float max_cell_size = max(config::hog_cell_size,config::cn_cell_size);
@@ -587,7 +589,9 @@ void Tracker::extract_features(cv::Mat img, cv::Point& pos, float scale,
     img_scale_sz.width = m_support_sz.width * scale;
     img_sample = sample_patch(img,pos,img_scale_sz,m_support_sz);
     cn_features = m_cn_extra->extract(img_sample);
-    hog_features = m_hog_extra->extract(img_sample); 
+
+    hog_features = fhog(img_sample);
+
     if(config::normalize_power==2)
     {
         cn_features->norm(config::normalize_power,config::normalize_size,config::normalize_dim);

@@ -2,7 +2,7 @@
 
 #include "opencv2/core.hpp"
 #include "Eigen/Core"
-#include "fhog.hpp"
+#include "fhog.h"
 #include "cnf.hpp"
 #include "train.hpp"
 #include "scale_filter.hpp"
@@ -76,7 +76,6 @@ public:
     shared_ptr<ScaleFilter> m_scalefilter;
     shared_ptr<SampleSpace> m_samplespace;
     shared_ptr<CNf> m_cn_extra;
-    shared_ptr<fHog> m_hog_extra;
 
     MatrixXcf m_scores_fs_feat1; // top half 
     MatrixXcf m_scores_fs_feat2; // top half 

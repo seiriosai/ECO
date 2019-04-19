@@ -1,6 +1,6 @@
 #pragma once
 #include "matlab_func.hpp"
-#include "fhog.hpp"
+#include "fhog.h"
 #include "type.hpp"
 using namespace cv;
 using namespace Feature;
@@ -36,7 +36,6 @@ private:
     MatrixXf Sample(Mat im, Point2f pos, Size2f target_sz, VectorXd& scales);
     MatrixXf feature_projection_scale(const MatrixXf& x,const MatrixXf& projection_matrix);
     MatrixXcf resizeDFT(MatrixXcf& inputdft, int len, int desiredLen);
-    shared_ptr<fHog> fhog;    
 };
 
 }

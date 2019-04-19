@@ -4,7 +4,6 @@
 #include "Eigen/Core"
 #include "opencv2/opencv.hpp"
 #include "opencv2/core/eigen.hpp"
-#include "fhog.hpp"
 #include "cnf.hpp"
 #include "tracker.hpp"
 #include "sample_space.hpp"
