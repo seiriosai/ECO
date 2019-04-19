@@ -139,12 +139,24 @@ void fHog::grad1( float *I, float *Gx, float *Gy, int h, int w, int x ) {
   int y, y1; float *Ip, *In, r; __m128 *_Ip, *_In, *_G, _r;
   // compute column of Gx
   Ip=I-h; In=I+h; r=.5f;
-  if(x==0) { r=1; Ip+=h; } else if(x==w-1) { r=1; In-=h; }
-  if( h<4 || h%4>0 || (size_t(I)&15) || (size_t(Gx)&15) ) {
-    for( y=0; y<h; y++ ) *Gx++=(*In++-*Ip++)*r;
-  } else {
-    _G=(__m128*) Gx; _Ip=(__m128*) Ip; _In=(__m128*) In; _r = SET(r);
-    for(y=0; y<h; y+=4) *_G++=MUL(SUB(*_In++,*_Ip++),_r);
+  if(x==0) 
+  { r=1; Ip+=h; } 
+  else if(x==w-1) 
+  { r=1; In-=h; }
+
+  if( h<4 || h%4>0 || (size_t(I)&15) || (size_t(Gx)&15) ) 
+  {
+	for( y=0; y<h; y++ ) 
+		*Gx++=(*In++-*Ip++)*r;
+  } 
+  else 
+  {
+    _G=(__m128*) Gx; 
+	_Ip=(__m128*) Ip; 
+	_In=(__m128*) In; 
+	_r = SET(r);
+	for(y=0; y<h; y+=4) 
+		*_G++=MUL(SUB(*_In++,*_Ip++),_r);
   }
   // compute column of Gy
   #define GRADY(r) *Gy++=(*In++-*Ip++)*r;
@@ -408,7 +420,7 @@ void fHog::fhog( float *M, float *O, float *H, int h, int w, int binSize,
     const int hb=h/binSize, wb=w/binSize, nb=hb*wb, nbo=nb*nOrients;
     float *N, *R1, *R2; int o, x;
     // compute unnormalized constrast sensitive histograms
-    R1 = (float*) wrCalloc(wb*hb*nOrients*2,sizeof(float));
+    R1 = (float*) wrCalloc((wb+1)*(hb+1)*nOrients*2,sizeof(float));
     gradHist( M, O, R1, h, w, binSize, nOrients*2, softBin, true );
     // compute unnormalized contrast insensitive histograms
     R2 = (float*) wrCalloc(wb*hb*nOrients,sizeof(float));
