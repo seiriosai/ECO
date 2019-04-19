@@ -6,7 +6,8 @@
 #include "opencv2/core.hpp"
 #include "feature.hpp"
 using namespace std;
-namespace Feature{
+
+namespace eco {
 
 class CNf{
 public:

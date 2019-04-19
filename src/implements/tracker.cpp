@@ -1,13 +1,14 @@
 #include "tracker.hpp"
 #include "fhog.h"
-#include<bits/stdc++.h>
 #include "matlab_func.hpp"
 #include "opencv2/imgproc.hpp"
 #include "opencv2/highgui.hpp"
 #include "opencv2/core/eigen.hpp"
 #include "fftw3.h"
+
 #include <ctime>
 #include <chrono>
+#include <random>
 
 namespace Track
 {
@@ -580,8 +581,8 @@ void Tracker::track(Mat img)
 }
 
 void Tracker::extract_features(cv::Mat img, cv::Point& pos, float scale,
-                         shared_ptr<Feature::Feature>& cn_features,
-                         shared_ptr<Feature::Feature>& hog_features)
+                         shared_ptr<eco::Feature>& cn_features,
+                         shared_ptr<eco::Feature>& hog_features)
 {
     cv::Mat img_sample;
     cv::Size2f img_scale_sz;
@@ -702,7 +703,7 @@ void Tracker::target_localization(Mat img)
         m_sample_pos.x = round(m_pos.x);
         m_sample_pos.y = round(m_pos.y);
         float sample_scale = m_currentScaleFactor;
-        shared_ptr<Feature::Feature> cn_xt, hog_xt;
+        shared_ptr<eco::Feature> cn_xt, hog_xt;
         extract_features(img, m_sample_pos, sample_scale, cn_xt, hog_xt);
         Array4D<float> cn_xt_proj(cn_xt->dim1,cn_xt->dim2,m_train->m_cn_projection_matrix.cols(),1);
         Array4D<float> hog_xt_proj(hog_xt->dim1,hog_xt->dim2,m_train->m_hog_projection_matrix.cols(),1);
@@ -779,7 +780,7 @@ void Tracker::init_model(Mat img)
     // Extract image region for training sample
     m_sample_pos.x = round(m_pos.x);
     m_sample_pos.y = round(m_pos.y);
-    shared_ptr<Feature::Feature> cn_xl,hog_xl;
+    shared_ptr<eco::Feature> cn_xl,hog_xl;
     extract_features(img,m_sample_pos,m_currentScaleFactor,cn_xl,hog_xl);
     // Do windowing of features
     Array4D<float> cn_xlw,hog_xlw;
@@ -1003,7 +1004,7 @@ void Tracker::shift_sample(Array4D<complex<float> >& cn_xlf,Array4D<complex<floa
     }
 }
 
-void Tracker::init_projection_matrix(shared_ptr<Feature::Feature>& cn_f,shared_ptr<Feature::Feature>& hog_f)
+void Tracker::init_projection_matrix(shared_ptr<eco::Feature>& cn_f,shared_ptr<eco::Feature>& hog_f)
 {
     int cn_rows = cn_f->dim1;
     int cn_cols = cn_f->dim2;

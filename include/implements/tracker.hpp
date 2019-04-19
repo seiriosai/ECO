@@ -11,8 +11,11 @@
 #include <thread>
 #include <condition_variable>
 
-using namespace Feature;
-namespace Track{
+using namespace eco;
+
+namespace Track
+{
+    
 class Tracker{
 
 public:
@@ -26,8 +29,8 @@ public:
     void get_reg_filter();
 
     void extract_features(cv::Mat img, cv::Point& pos, float scale,
-                         shared_ptr<Feature::Feature>& cn_features,
-                         shared_ptr<Feature::Feature>& hog_features);
+                         shared_ptr<eco::Feature>& cn_features,
+                         shared_ptr<eco::Feature>& hog_features);
     cv::Mat sample_patch(cv::Mat img, cv::Point pos, cv::Size2f sample_sz, cv::Size output_sz);
 
     void init_model(Mat img);
@@ -35,7 +38,7 @@ public:
     void model_update(Mat img);
     void thread_train_filter();
     void shift_sample(Array4D<complex<float> >& cn_xlf,Array4D<complex<float> >& hog_xlf, Point2d shift_samp);
-    void init_projection_matrix(shared_ptr<Feature::Feature>& cn_f,shared_ptr<Feature::Feature>& hog_f);
+    void init_projection_matrix(shared_ptr<eco::Feature>& cn_f,shared_ptr<eco::Feature>& hog_f);
     Point2f optimize_scores();
 
     cv::Point2f m_pos;

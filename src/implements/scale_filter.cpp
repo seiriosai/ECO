@@ -320,7 +320,7 @@ MatrixXf ScaleFilter::Sample(Mat im, Point2f pos, Size2f target_sz, VectorXd& sc
         cout<<" ScaleModel_sz "<<ScaleModel_sz<<endl;
         cout<<" target_sz "<<target_sz<<endl;
         cout<<" h "<<h<<" w "<<w<<endl;
-        shared_ptr<Feature::Feature> temp_hog;
+        shared_ptr<eco::Feature> temp_hog;
 		temp_hog = fhog(im_patch, 4, 9, 0.2f, false);
         if(i==0)
             scale_sample.resize(temp_hog->dim1*temp_hog->dim2*temp_hog->dim3,num_scales);

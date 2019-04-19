@@ -3,7 +3,7 @@
 #include "fhog.h"
 #include "type.hpp"
 using namespace cv;
-using namespace Feature;
+using namespace eco;
 using namespace Eigen;
 
 namespace Track

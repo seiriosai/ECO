@@ -1,5 +1,7 @@
 #include "cnf.hpp"
-namespace Feature{
+namespace eco
+{
+    
 CNf::CNf(int _binSize)
 {
     binSize = _binSize;

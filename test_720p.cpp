@@ -17,6 +17,7 @@ using namespace std;
 
 int main()
 {
+    
     string video_path = "../";
     string groundtruth_path = "../";
     string video_name = "test2.avi";

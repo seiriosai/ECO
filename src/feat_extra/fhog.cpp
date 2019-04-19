@@ -24,7 +24,7 @@ void alFree(void* aligned) {
 * Piotr's Computer Vision Matlab Toolbox      Version 3.30
 * Copyright 2014 Piotr Dollar & Ron Appel.  [pdollar-at-gmail.com]
 * Licensed under the Simplified BSD License [see external/bsd.txt]
-*******************************************************************************/
+ **********************************************eco::Featureeature*************************/
 // #include "wrappers.hpp"
 
 #define PI 3.14159265f
@@ -454,7 +454,7 @@ float* crop_H(float *H,int* h_height,int* h_width,int depth,int dh,int dw){
     return crop_H;
 }
 
-shared_ptr<Feature::Feature> fhog(const cv::Mat& img, int binSize, int nOrients, float clip, bool crop){
+shared_ptr<eco::Feature> fhog(const cv::Mat& img, int binSize, int nOrients, float clip, bool crop){
     int height = img.rows;
     int width = img.cols;
     int channel = img.channels();
@@ -494,7 +494,7 @@ shared_ptr<Feature::Feature> fhog(const cv::Mat& img, int binSize, int nOrients,
     int wb = width/binSize;
     int nChns = nOrients*3+4;
 
-    shared_ptr<Feature::Feature> H = make_shared<Feature::Feature>(hb,wb,nChns);
+    shared_ptr<eco::Feature> H = make_shared<eco::Feature>(hb,wb,nChns);
     memset(H->data,0.0f,(hb)*(wb)*(nChns)*sizeof(float));
 
     fhog( M, O, H->data, height, width, binSize, nOrients, -1, clip);

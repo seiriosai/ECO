@@ -10,7 +10,7 @@
 using namespace std;
 
 using namespace cv;
-using namespace Feature;
+using namespace eco;
 int main(int argv,char** argc)
 {
     Mat im(imread("/mnt/data1/outputimages/gray_460.png",IMREAD_UNCHANGED));

@@ -1,21 +1,29 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.10.0)
+
+project(eco)
 
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall")
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -fsee -fomit-frame-pointer -fno-signed-zeros -fno-math-errno -funroll-loops -lfftw3 -lm")
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -fsee -fomit-frame-pointer -fno-signed-zeros -fno-math-errno -funroll-loops -lm")
 SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/CMakeModules/")
-FIND_PACKAGE(Eigen REQUIRED)
-FIND_PACKAGE(catkin REQUIRED)
+FIND_PACKAGE(Eigen3 REQUIRED PATHS "../../build/install/share/eigen3/cmake")
 FIND_PACKAGE(OpenCV REQUIRED)
+FIND_PACKAGE(fftw3 REQUIRED PATHS "../../build/install/lib/cmake/fftw3/" NO_DEFAULT_PATH)
 
 include_directories(
     include
     include/feat_extra
     include/implements
-    ${Eigen_INCLUDE_DIRS}
+    ${EIGEN3_INCLUDE_DIR}
     ${OpenCV_INCLUDE_DIRS}
+    ${FFTW3_INCLUDE_DIRS}
 )
 
-add_library( IMP_SRC
+link_directories(
+    ${FFTW3_LIBRARY_DIRS}
+    ${OpenCV_LIBRARY_DIRS}
+)
+
+add_library(IMP_SRC
         src/config.cpp
         src/matlab_func.cpp
         src/feat_extra/fhog.cpp
@@ -25,32 +33,31 @@ add_library( IMP_SRC
         src/implements/train.cpp
         src/implements/scale_filter.cpp
         src/implements/sample_space.cpp
-		)	# TODO shared?
-# add_dependencies(IMP_SRC ${OpenCV_LIBRARIES}
-#                             m)
+		)
 
-
+list(APPEND THIRD_PARTY_LIBS 
+    IMP_SRC
+    ${OpenCV_LIBRARIES}
+    ${FFTW3_LIBRARIES}
+    m
+)
 add_executable(func_test func_test.cpp)       
-target_link_libraries(func_test
-                    IMP_SRC
-                    ${OpenCV_LIBRARIES}
-                    fftw3
-                    m
+target_link_libraries(func_test IMP_SRC
+                    ${THIRD_PARTY_LIBS}
                     )
 
 add_executable(eco main.cpp)       
 target_link_libraries(eco 
                     IMP_SRC
                     ${OpenCV_LIBRARIES}
-                    fftw3
+                    ${FFTW3_LIBRARIES}
                     m
                     )
 
 add_executable(vot100_test vot100_test.cpp)       
 target_link_libraries(vot100_test 
                     IMP_SRC
-                    ${OpenCV_LIBRARIES}
-                    fftw3
+                    
                     m
                     )
 
@@ -58,6 +65,6 @@ add_executable(video_test test_720p.cpp)
 target_link_libraries(video_test 
                     IMP_SRC
                     ${OpenCV_LIBRARIES}
-                    fftw3
+                    ${FFTW3_LIBRARIES}
                     m
                     )

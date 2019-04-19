@@ -7,7 +7,8 @@
 #include <emmintrin.h>
 #endif
 using namespace std;
-namespace Feature{
+
+namespace eco{
 
 class Feature{
 public:
