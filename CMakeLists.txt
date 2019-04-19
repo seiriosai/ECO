@@ -2,12 +2,12 @@ cmake_minimum_required(VERSION 3.10.0)
 
 project(eco)
 
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -Wall")
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -fsee -fomit-frame-pointer -fno-signed-zeros -fno-math-errno -funroll-loops -lm")
-SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/CMakeModules/")
-FIND_PACKAGE(Eigen3 REQUIRED PATHS "../../build/install/share/eigen3/cmake")
-FIND_PACKAGE(OpenCV REQUIRED)
-FIND_PACKAGE(fftw3 REQUIRED PATHS "../../build/install/lib/cmake/fftw3/" NO_DEFAULT_PATH)
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -fsee -fomit-frame-pointer -fno-signed-zeros -fno-math-errno -funroll-loops")
+
+find_package(Eigen3 REQUIRED)
+find_package(OpenCV REQUIRED)
+find_package(fftw3 REQUIRED)
 
 include_directories(
     include
@@ -23,48 +23,38 @@ link_directories(
     ${OpenCV_LIBRARY_DIRS}
 )
 
-add_library(IMP_SRC
-        src/config.cpp
-        src/matlab_func.cpp
-        src/feat_extra/fhog.cpp
-        src/feat_extra/cnf.cpp
+list(APPEND ECO_SOURCE_FILES
+    src/config.cpp
+    src/matlab_func.cpp
+    src/feat_extra/fhog.cpp
+    src/feat_extra/cnf.cpp
 
-        src/implements/tracker.cpp
-        src/implements/train.cpp
-        src/implements/scale_filter.cpp
-        src/implements/sample_space.cpp
-		)
-
-list(APPEND THIRD_PARTY_LIBS 
-    IMP_SRC
-    ${OpenCV_LIBRARIES}
-    ${FFTW3_LIBRARIES}
-    m
+    src/implements/tracker.cpp
+    src/implements/train.cpp
+    src/implements/scale_filter.cpp
+    src/implements/sample_space.cpp
 )
-add_executable(func_test func_test.cpp)       
-target_link_libraries(func_test IMP_SRC
-                    ${THIRD_PARTY_LIBS}
-                    )
 
-add_executable(eco main.cpp)       
-target_link_libraries(eco 
-                    IMP_SRC
-                    ${OpenCV_LIBRARIES}
-                    ${FFTW3_LIBRARIES}
-                    m
-                    )
+add_library(eco ${ECO_SOURCE_FILES})
 
-add_executable(vot100_test vot100_test.cpp)       
-target_link_libraries(vot100_test 
-                    IMP_SRC
-                    
-                    m
-                    )
+option(BUILD_WITH_TEST "build with test program" ON)
 
-add_executable(video_test test_720p.cpp)       
-target_link_libraries(video_test 
-                    IMP_SRC
-                    ${OpenCV_LIBRARIES}
-                    ${FFTW3_LIBRARIES}
-                    m
-                    )
+if(BUILD_WITH_TEST)
+    list(APPEND ECO_DEP_LIBS 
+        eco
+        ${OpenCV_LIBRARIES}
+        ${FFTW3_LIBRARIES}
+    )
+
+    add_executable(func_test func_test.cpp)       
+    target_link_libraries(func_test ${ECO_DEP_LIBS})
+
+    add_executable(eco_main main.cpp)       
+    target_link_libraries(eco_main ${ECO_DEP_LIBS})
+
+    add_executable(vot100_test vot100_test.cpp)       
+    target_link_libraries(vot100_test ${ECO_DEP_LIBS})
+
+    add_executable(video_test test_720p.cpp)       
+    target_link_libraries(video_test ${ECO_DEP_LIBS})
+endif()

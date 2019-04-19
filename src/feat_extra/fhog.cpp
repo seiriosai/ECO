@@ -308,7 +308,7 @@ void hogChannels( float *H, const float *R, const float *N,
 void hog( float *M, float *O, float *H, int h, int w, int binSize,
   int nOrients, int softBin, bool full, float clip )
 {
-  float *N, *R; const int hb=h/binSize, wb=w/binSize, nb=hb*wb;
+  float *N, *R; const int hb=h/binSize, wb=w/binSize;
   // compute unnormalized gradient histograms
   R = (float*) wrCalloc(wb*hb*nOrients,sizeof(float));
   gradHist( M, O, R, h, w, binSize, nOrients, softBin, full );
@@ -499,7 +499,8 @@ shared_ptr<eco::Feature> fhog(const cv::Mat& img, int binSize, int nOrients, flo
 
     fhog( M, O, H->data, height, width, binSize, nOrients, -1, clip);
 
-    delete M;delete O;
+    delete[] M;
+    delete[] O;
     if(crop)
 		crop_H(H->data,&hb,&wb,nChns,height%binSize < binSize/2,width%binSize < binSize/2);
 	return H;

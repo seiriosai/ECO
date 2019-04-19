@@ -104,7 +104,7 @@ shared_ptr<Feature> CNf::average_feature_region(shared_ptr<Feature>& im, int hei
     float area = binSize*binSize;
     shared_ptr<Feature> iImage = integralImage(im->data,height,width);
 
-    shared_ptr<Feature> features = make_shared<Feature>(height/binSize,width/binSize, dims);
+    shared_ptr<Feature> features = std::make_shared<eco::Feature>(height/binSize,width/binSize, dims);
 
     float *p_ret = features->data;
     float* iim ;
