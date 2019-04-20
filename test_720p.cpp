@@ -10,14 +10,11 @@
 #include "scale_filter.hpp"
 #include <chrono>
 #include <thread>
-#include <unistd.h>
-
 
 using namespace std;
 
 int main()
 {
-    
     string video_path = "../";
     string groundtruth_path = "../";
     string video_name = "test2.avi";
@@ -54,8 +51,7 @@ int main()
 		if (frame.empty()) 
             break;
         tracker.track(frame);
-		usleep(150000);
-		//std::this_thread::sleep_for(std::chrono::milliseconds(DELAY_FOR_RETRIES));
+		std::this_thread::sleep_for(std::chrono::milliseconds(20));
         num_track++;
     }
     cout<<" total time:"<<tracker.time<<" fps:"<<(num_track-2)/tracker.time<<endl;

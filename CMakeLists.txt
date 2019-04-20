@@ -3,7 +3,14 @@ cmake_minimum_required(VERSION 3.10.0)
 project(eco)
 
 set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -fsee -fomit-frame-pointer -fno-signed-zeros -fno-math-errno -funroll-loops")
+if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
+    set(SSE_FLAG "-mavx -mfma")
+elseif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
+    set(SSE_FLAG "/arch:AVX")
+else()
+    set(SSE_FLAG "-mavx -mfma")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -fsee -fomit-frame-pointer -fno-signed-zeros -fno-math-errno -funroll-loops")
+endif()
 
 find_package(Eigen3 REQUIRED)
 find_package(OpenCV REQUIRED)
@@ -36,7 +43,9 @@ list(APPEND ECO_SOURCE_FILES
     src/implements/sample_space.cpp
 )
 
-add_library(eco ${ECO_SOURCE_FILES})
+add_library(eco STATIC ${ECO_SOURCE_FILES})
+add_definitions(-D__SSE2__)
+target_compile_options (eco PRIVATE ${SSE_FLAG})
 
 option(BUILD_WITH_TEST "build with test program" ON)
 

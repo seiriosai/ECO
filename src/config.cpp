@@ -1,19 +1,21 @@
 #include "config.hpp"
+#include <string>
 
 namespace config {
 
 // TODO allow different types for a value. using template
 ConfigParser::ConfigParser(const char* fname) {
 
-    ifstream file(fname);
+    std::ifstream file(fname);
     if(!file.is_open())
     {
         printf("Cannot find config file!\n");
         exit(-1);
     }
 	const static size_t BUFSIZE = 40960000;		// TODO overflow
-	string s; s.resize(BUFSIZE);
-    while (file >> s) 
+	std::string s; 
+    s.resize(BUFSIZE);
+    while (std::getline(file, s))
     {
 		if (s[0] == '#') {
 			file.getline(&s[0], BUFSIZE, '\n');

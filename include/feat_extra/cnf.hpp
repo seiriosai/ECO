@@ -29,7 +29,7 @@ private:
 
     int row,col;
 
-    float* table_data;
+    float ALIGNED_(16)* table_data;
 };
 
 }

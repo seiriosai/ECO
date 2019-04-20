@@ -52,6 +52,9 @@ Tracker::~Tracker()
 
 void Tracker::init()
 {
+    double testfrom = 0.2;
+    __m256d test = _mm256_set1_pd(testfrom);
+
     time = 0;
     m_frame_count = 1;
     // 采样区域的大小
@@ -202,7 +205,8 @@ void Tracker::init()
         m_cn_kx(0,i) = i- (m_cn_filter_sz.width/2);
     }
     MatrixXd cn_yf_x = s2piw * (-2 * (m_cn_kx*PI*sig_y_width/m_output_sz.width).array().pow(2)).exp();
-    m_train->m_cn_yf = (cn_yf_y * cn_yf_x).cast<float>();
+    MatrixXd cn_yf_xy = (cn_yf_y * cn_yf_x);
+    m_train->m_cn_yf = cn_yf_xy.cast<float>();
     // Matlab::write_mat("/home/huajun/Documents/hj1/cn_yf",m_train->m_cn_yf.rows(),m_train->m_cn_yf.cols(),m_train->m_cn_yf.data());
 
     // cn ky kx yf 初始化
@@ -1018,7 +1022,7 @@ void Tracker::init_projection_matrix(shared_ptr<eco::Feature>& cn_f,shared_ptr<e
 
     // 计算均值 再做减法
     float *data,*dst;
-    float* __attribute__((aligned(16))) cn_data = new float[cn_cols*cn_rows*cn_dims];
+    float ALIGNED_(16) *cn_data = new float[cn_cols*cn_rows*cn_dims];
     for(int dim=0;dim<cn_dims;++dim)
     {
         #ifdef __SSE2__
@@ -1066,11 +1070,11 @@ void Tracker::init_projection_matrix(shared_ptr<eco::Feature>& cn_f,shared_ptr<e
             }
         #endif
     }
-    float* __attribute__((aligned(16))) hog_data = new float[hog_cols*hog_rows*hog_dims];
+    float ALIGNED_(16) *hog_data = new float[hog_cols*hog_rows*hog_dims];
     for(int dim=0;dim<hog_dims;++dim)
     {
-        data = hog_f->data+dim*hog_stride;
-        dst = hog_data+dim*hog_stride;
+        data = hog_f->data + dim*hog_stride;
+        dst = hog_data + dim*hog_stride;
         #if __SSE2__
             float sum_4[4];
             const int aliq = hog_stride-4;

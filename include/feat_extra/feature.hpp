@@ -3,8 +3,17 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include <math.h>
+
 #ifdef __SSE2__
 #include <emmintrin.h>
+#endif
+
+#if defined(_MSC_VER)
+#define ALIGNED_(x) __declspec(align(x))
+#else
+#if defined(__GNUC__)
+#define ALIGNED_(x) __attribute__ ((aligned(x)))
+#endif
 #endif
 
 using namespace std;
@@ -13,11 +22,11 @@ namespace eco {
 
 class Feature{
 public:
-    float* __attribute__((aligned(16))) data;
-    int dim1;   // 特征的行数
-    int dim2;   // 特征的列数
-    int dim3;   // 特征的维度
-    int size;   // 大小
+    float ALIGNED_(16) *data;
+    int dim1;   // feature rows
+    int dim2;   // feature colums
+    int dim3;   // feature dimesion
+    int size;   // feature size
 
     Feature():data(NULL),dim1(0),dim2(0),dim3(0),size(0)
     {
