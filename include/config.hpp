@@ -6,11 +6,8 @@
 using namespace std;
 
 namespace config {
-class ConfigParser {
-public:
-    ConfigParser(const char* fname);
-};
 
+void LoadCfgFile(const char* fname);
 
 // Global feature parameters1s
 extern int normalize_power;

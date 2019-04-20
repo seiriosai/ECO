@@ -4,11 +4,11 @@ project(eco)
 
 set(CMAKE_CXX_STANDARD 11)
 if (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
-    set(SSE_FLAG "-mavx -mfma")
+    set(SSE_FLAG "-mavx2")
+    set(FMA_FLAG "-mfma")
 elseif(${CMAKE_SYSTEM_NAME} MATCHES "Windows")
     set(SSE_FLAG "/arch:AVX")
 else()
-    set(SSE_FLAG "-mavx -mfma")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -fsee -fomit-frame-pointer -fno-signed-zeros -fno-math-errno -funroll-loops")
 endif()
 
@@ -41,15 +41,20 @@ list(APPEND ECO_SOURCE_FILES
     src/implements/train.cpp
     src/implements/scale_filter.cpp
     src/implements/sample_space.cpp
+
+    src/eco.cpp
 )
 
 add_library(eco STATIC ${ECO_SOURCE_FILES})
 add_definitions(-D__SSE2__)
 target_compile_options (eco PRIVATE ${SSE_FLAG})
+if (FMA_FLAG)
+    target_compile_options (eco PRIVATE ${FMA_FLAG})
+endif()
 
-option(BUILD_WITH_TEST "build with test program" ON)
+option(BUILD_WITH_APP "build with test program" ON)
 
-if(BUILD_WITH_TEST)
+if(BUILD_WITH_APP)
     list(APPEND ECO_DEP_LIBS 
         eco
         ${OpenCV_LIBRARIES}

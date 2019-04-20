@@ -11,7 +11,7 @@ namespace eco {
 
 class CNf{
 public:
-    CNf(int _binSize);
+    CNf(int _binSize, const char* resPath);
     ~CNf();
     shared_ptr<Feature> extract(cv::Mat img);
 private:

@@ -2,18 +2,23 @@
 namespace eco
 {
     
-CNf::CNf(int _binSize)
+CNf::CNf(int _binSize, const char* resPath)
 {
     binSize = _binSize;
     dims = 10;
     size = 32768;
     table_data = new float[dims*size];
 
+    std::string sResPath = "../resource";
+    if (resPath)
+        sResPath = resPath;
+    sResPath += "/CNnorm.txt";
+    
     assert(table_data != NULL);
     string line;
     float element;
     int index=0;
-    ifstream cin("../resource/CNnorm.txt");
+    ifstream cin(sResPath);
     assert(cin.is_open());
     while(getline(cin,line))
     {

@@ -41,7 +41,7 @@ int main()
     cin.close();
 
     cout<<" get x  " << x << " y" << y << "w " << width << "h " << height << endl;
-    Track::Tracker tracker(x, y, height, width, frame);
+    Track::Tracker tracker(x, y, height, width, frame, nullptr);
     cout<<" initialed "<<endl;
     int num_track =0;
 //    using namespace std::chrono_literals;
@@ -50,8 +50,13 @@ int main()
 		vidCap >> frame;
 		if (frame.empty()) 
             break;
-        tracker.track(frame);
-		std::this_thread::sleep_for(std::chrono::milliseconds(20));
+        cv::Rect rc = tracker.track(frame);
+        
+        // Visualizing
+        rectangle(frame, rc, Scalar(0,255,0), 2);
+        cv::imshow("result", frame);
+        
+        cv::waitKey(10);
         num_track++;
     }
     cout<<" total time:"<<tracker.time<<" fps:"<<(num_track-2)/tracker.time<<endl;

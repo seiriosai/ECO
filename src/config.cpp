@@ -4,8 +4,8 @@
 namespace config {
 
 // TODO allow different types for a value. using template
-ConfigParser::ConfigParser(const char* fname) {
-
+void LoadCfgFile(const char* fname)
+{
     std::ifstream file(fname);
     if(!file.is_open())
     {
@@ -361,6 +361,7 @@ float projection_reg = 1e-7;	 	 	// Regularization paremeter of the projection m
 bool use_sample_merge = true;                 // Use the generative sample space model to merge samples
 int sample_merge_type = 1;             // Strategy for updating the samples (0 for 'replace' ,1 for 'merge')
 // int distance_matrix_update_type = 1;   // Strategy for updating the distance matrix
+int size_mode = 2;                      //  {same 0 , exact 1 , odd_cells 2 }
 
 // Conjugate Gradient parameters
 int CG_iter = 5;                     // The number of Conjugate Gradient iterations in each update after the first frame
@@ -419,7 +420,6 @@ int hog_orient_num = 9;
 
 int hog_compressed_dim = 10;
 int cn_compressed_dim = 3;
-int size_mode = 2;
 
 int debug1 = 0;
 int debug2 = 0;

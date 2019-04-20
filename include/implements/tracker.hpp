@@ -10,18 +10,19 @@
 #include <mutex>
 #include <thread>
 #include <condition_variable>
+#include "eco.h"
 
 using namespace eco;
 
 namespace Track
 {
     
-class Tracker{
+class Tracker : public eco::EcoTracker{
 
 public:
-    Tracker(float tlx,float tly,float height,float width,cv::Mat im);
+    Tracker(float tlx, float tly, float height, float width, cv::Mat im, const char* cfgPath);
     ~Tracker();
-    void track(cv::Mat img);
+    virtual cv::Rect track(cv::Mat img) override;
 
 // private:
     void init();
@@ -89,5 +90,6 @@ public:
 
     double time;
     bool m_train_thread;
+    std::string m_cfg_folder;
 };
 }

@@ -12,9 +12,15 @@
 
 namespace Track
 {
-Tracker::Tracker(float tlx,float tly,float height,float width, Mat im)
+    
+Tracker::Tracker(float tlx, float tly, float height, float width, cv::Mat im, const char* cfgPath)
 {
-    config::ConfigParser("../resource/config.cfg");
+    m_cfg_folder = "../resource";
+    if (cfgPath)
+        m_cfg_folder = cfgPath;
+    
+    std::string cfgFilePath = m_cfg_folder + "/config.cfg";
+    config::LoadCfgFile(cfgFilePath.c_str());
 
     m_im_height = im.rows;
     m_im_width = im.cols;
@@ -52,9 +58,6 @@ Tracker::~Tracker()
 
 void Tracker::init()
 {
-    double testfrom = 0.2;
-    __m256d test = _mm256_set1_pd(testfrom);
-
     time = 0;
     m_frame_count = 1;
     // 采样区域的大小
@@ -95,7 +98,7 @@ void Tracker::init()
         }
     }
     // 初始化特征提取
-    m_cn_extra = make_shared<CNf>(config::cn_cell_size);
+    m_cn_extra = make_shared<CNf>(config::cn_cell_size, m_cfg_folder.c_str());
 
     // 真正的采样区域大小 
     float max_cell_size = max(config::hog_cell_size,config::cn_cell_size);
@@ -513,7 +516,7 @@ void Tracker::get_reg_filter()
     m_train->m_reg_energy = m_train->m_reg_filter.array().abs2().sum();
 }
 
-void Tracker::track(Mat img)
+cv::Rect Tracker::track(cv::Mat img)
 {
     m_scalefilter->sScale.interpScaleFactors.resize(33);
 
@@ -522,66 +525,14 @@ void Tracker::track(Mat img)
     target_localization(img);
     model_update(img);
     end = clock();
-    cout << " track cost : "<<(double)(end - start) / CLOCKS_PER_SEC <<" s "<< endl;
+    //cout << " track cost : "<<(double)(end - start) / CLOCKS_PER_SEC <<" s "<< endl;
     time +=( (double)(end - start) / CLOCKS_PER_SEC);
-    // Visualizing
+
     Size target_sz = m_target_sz * m_currentScaleFactor;
     cv::Rect rect_position_vis(m_pos.x - target_sz.width/2,m_pos.y-target_sz.height/2,target_sz.width,target_sz.height);
-
-    // // visualize
-    // MatrixXcf extend = MatrixXcf::Zero(409/2+1,409);
-    // extend.topLeftCorner(m_scores_fs_sum.rows(),m_scores_fs_sum.cols()/2+1) = m_scores_fs_sum.leftCols(m_scores_fs_sum.cols()/2+1);
-    // extend.topRightCorner(m_scores_fs_sum.rows(),m_scores_fs_sum.cols() - m_scores_fs_sum.cols()/2-1) = 
-    //                                                     m_scores_fs_sum.rightCols(m_scores_fs_sum.cols()-m_scores_fs_sum.cols()/2-1);
-    // MatrixXf score;
-    // Matlab::ifft2(extend,score,409,409);
-    // MatrixXf score_shift(409,409);
-    // score_shift.topLeftCorner(204,204) = score.bottomRightCorner(204,204);
-    // score_shift.topRightCorner(204,205) = score.bottomLeftCorner(204,205);
-    // score_shift.bottomLeftCorner(205,204) = score.topRightCorner(205,204);
-    // score_shift.bottomRightCorner(205,205) = score.topLeftCorner(205,205);
-    // float min = score_shift.minCoeff();
-    // float max = score_shift.maxCoeff();
-    // MatrixXi i_im = ((score_shift.array() - min) * 255 /(max-min)).cast<int>();
-
-    // Mat weight;
-    // eigen2cv(i_im,weight);
-    // weight.convertTo(weight, CV_8UC1);
-    // Mat im_color;
-    // applyColorMap(weight, im_color, COLORMAP_JET);
-
-    // imshow("color",im_color);
-
-    // Size resp_sz;
-    // resp_sz.height = round(m_support_sz.height*m_currentScaleFactor);
-    // resp_sz.width = round(m_support_sz.width*m_currentScaleFactor);
-
-    // resize(im_color,im_color,resp_sz);
-    // int left=0,right=0,top=0,bottom=0;
-    // if( m_sample_pos.x-resp_sz.width/2 < 0)
-    // {
-    //     left = resp_sz.width/2 - m_sample_pos.x;
-    // }
-    // if(m_sample_pos.x-resp_sz.width/2 + resp_sz.width > img.cols -1)
-    // {
-    //     right = (m_sample_pos.x-resp_sz.width/2 + resp_sz.width) - img.cols + 1;
-    // }
-    // if( m_sample_pos.y-resp_sz.height/2 < 0)
-    // {
-    //     top = resp_sz.height/2 - m_sample_pos.y;
-    // }
-    // if(m_sample_pos.y-resp_sz.height/2 + resp_sz.height > img.rows -1)
-    // {
-    //     bottom = (m_sample_pos.y-resp_sz.height/2 + resp_sz.height)-img.rows +1;
-    // }
-    // Mat ROI1 = img(Rect(m_sample_pos.x-resp_sz.width/2 + left ,m_sample_pos.y-resp_sz.height/2 + top,resp_sz.width - left - right,resp_sz.height - top - bottom));//(im,rect_position_vis);
-    // Mat ROI2 = im_color(Rect(left,top,resp_sz.width - left - right,resp_sz.height - top - bottom));
-    // addWeighted(ROI1, 0.5, ROI2, 0.5, 0.0, ROI1);
-    rectangle(img, rect_position_vis, Scalar(0,255,0), 2);
-    resize(img,img,Size(),0.5,0.5);
-    imshow("ret",img);
-    waitKey(1);     
     ++m_frame_count;
+    
+    return rect_position_vis;
 }
 
 void Tracker::extract_features(cv::Mat img, cv::Point& pos, float scale,
@@ -597,7 +548,7 @@ void Tracker::extract_features(cv::Mat img, cv::Point& pos, float scale,
 
     hog_features = fhog(img_sample);
 
-    if(config::normalize_power==2)
+    if(config::normalize_power == 2)
     {
         cn_features->norm(config::normalize_power,config::normalize_size,config::normalize_dim);
         hog_features->norm(config::normalize_power,config::normalize_size,config::normalize_dim);
