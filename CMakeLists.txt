@@ -23,6 +23,7 @@ link_directories(
     ${OpenCV_LIBRARY_DIRS}
 )
 
+file(GLOB_RECURSE ECO_SOURCE_FILES include/*.hpp include/*.h)
 list(APPEND ECO_SOURCE_FILES
     src/config.cpp
     src/matlab_func.cpp

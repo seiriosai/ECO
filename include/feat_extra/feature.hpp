@@ -6,9 +6,10 @@
 #ifdef __SSE2__
 #include <emmintrin.h>
 #endif
+
 using namespace std;
 
-namespace eco{
+namespace eco {
 
 class Feature{
 public:
